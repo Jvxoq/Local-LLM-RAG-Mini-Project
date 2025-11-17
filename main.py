@@ -1,26 +1,41 @@
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
-from vector import retriever
+from rag import retriever
 
-model = OllamaLLM(model="llama3.2")
+# Creating the model object
+model = OllamaLLM(model='llama3.2')
 
-template = """
-You are an exeprt in answering questions about a pizza restaurant
-
-Here are some relevant reviews: {reviews}
-
-Here is the question to answer: {question}
+# Template to create a prompt
+TEMPLATE = """
+Context: {context}
+Question: {question}
 """
-prompt = ChatPromptTemplate.from_template(template)
+
+# Initialising a prompt using TEMPLATE
+prompt = ChatPromptTemplate.from_template(TEMPLATE)
+
+# Prompt to Model Pipeline
 chain = prompt | model
 
+print('\nWelcome to Local LLM + RAG\n')
+
 while True:
-    print("\n\n-------------------------------")
-    question = input("Ask your question (q to quit): ")
-    print("\n\n")
-    if question == "q":
+
+       
+    question = input("Enter your Question (x to exit): ")
+
+    if question.lower().strip() == 'x':
         break
-    
-    reviews = retriever.invoke(question)
-    result = chain.invoke({"reviews": reviews, "question": question})
-    print(result)
+
+
+    # Using the Retriever to get the context for the question
+    context = retriever.invoke(question)
+
+    # Passing values for the placeholders in the template
+    result = chain.invoke({'context': context, 'question': question})
+    print('------------------------------------------------------------')
+    print(f'Answer: {result}')
+    print('------------------------------------------------------------\n\n')
+
+
+

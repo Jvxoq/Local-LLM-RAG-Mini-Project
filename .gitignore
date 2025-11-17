@@ -1,0 +1,4 @@
+aiagent/
+*.pdf
+.python-version
+__pycache__/
